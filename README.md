@@ -2,7 +2,7 @@
 
 Easily request Let's Encrypt certificates on HAProxy servers with only a handful of dependencies.
 
-Make sure HAProxy routes your `path_beg .well-known/` traffic to port 8888.
+Make sure HAProxy routes your `path_beg .well-known/` traffic to port $CERTBOTPORT
 
 ## Usage
 
