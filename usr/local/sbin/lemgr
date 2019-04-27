@@ -49,7 +49,7 @@ function merge {
 
         haproxyctl reload
 
-# TODO: Fix this if. For some reason we always get rc 2
+# TODO: For some resaon we always get rc 2
 #        if [ $? -eq 0 ]; then
 #            echo SOS: Something went wrong while reloading HAProxy
 #            exit 2
@@ -63,10 +63,20 @@ function merge {
 }
 
 if [ $1 == merge ]; then
+    if [ $# -ne 2 ]; then
+        echo Missing argument
+        exit 1
+    fi
+
     echo Merging $2
 
     merge $2
 elif [ $1 == create ]; then
+    if [ $# -ne 2 ]; then
+        echo Missing argument
+        exit 1
+    fi
+
     echo Requesting new certificate $2
 
     if [ -f /etc/letsencrypt/renewal/$2.conf ]; then
@@ -84,6 +94,11 @@ elif [ $1 == create ]; then
         exit 2
     fi
 elif [ $1 == renew ]; then
+    if [ $# -ne 2 ]; then
+        echo Missing argument
+        exit 1
+    fi
+
     echo Renewing existing certificate $2
 
     if [ ! -f /etc/letsencrypt/renewal/$2.conf ]; then
