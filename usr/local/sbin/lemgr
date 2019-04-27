@@ -1,0 +1,119 @@
+#!/bin/bash
+#title           :lemgr
+#description     :Request Let's Encrypt certificates on a HAProxy box
+#author          :William Edwards <wedwards@cyberfusion.nl>
+#date            :20190427
+#version         :1.0
+#=====================================================================================================
+
+EMAIL=noise@localhost
+HAPROXYCONFIG=/etc/haproxy/haproxy.cfg
+CERTDIR=/etc/haproxy/http-certs
+CERTBOTPORT=8888
+
+func_stdout_err()
+{
+    echo "lemgr: $1"
+    echo ""
+    echo "Usage:"
+    echo " user@host:~\$ lemgr action"
+    exit 128
+}
+
+for i in bash certbot haproxy haproxyctl
+do
+    if [ "$(which $i)" = "" ] ;then
+        echo "This script requires $i"
+        exit 1
+    fi
+done
+
+if [ $# -lt 1 ]; then
+    func_stdout_err "Missing valid argument.
+Options: create, renew, cron"
+fi
+
+function merge {
+
+    if [ ! -f /etc/letsencrypt/live/$1/fullchain.pem ] && [ ! -f /etc/letsencrypt/live/$1/privkey.pem ]; then
+        echo Certificate files for $1 do not exist
+        exit 2
+    fi
+
+    cat /etc/letsencrypt/live/$1/fullchain.pem /etc/letsencrypt/live/$1/privkey.pem > $CERTDIR/$1.pem
+
+    haproxy -c -V -f $HAPROXYCONFIG
+
+    if [ $? -eq 0 ]; then
+        echo Reloading HAProxy
+
+        haproxyctl reload
+
+# TODO: For some resaon we always get rc 2
+#        if [ $? -eq 0 ]; then
+#            echo SOS: Something went wrong while reloading HAProxy
+#            exit 2
+#        fi
+
+        exit 0
+    else
+        echo SOS: Could not reload HAProxy due to config error
+        exit 2
+    fi
+}
+
+if [ $1 == merge ]; then
+    echo Merging $2
+
+    merge $2
+elif [ $1 == create ]; then
+    echo Requesting new certificate $2
+
+    if [ -f /etc/letsencrypt/renewal/$2.conf ]; then
+        echo Certificate files for $2 already exist. Try renewing the existing certificate.
+        exit 1
+    fi
+
+    certbot certonly --standalone -d $2 --non-interactive --agree-tos --email $EMAIL --http-01-port=$CERTBOTPORT --deploy-hook="/bin/bash /usr/local/sbin/lemgr merge $2"
+
+    if [ $? -eq 0 ]; then
+        echo Successfully created and merged certificate
+        exit 0
+    else
+        echo SOS: Something went wrong while creating certificate
+        exit 2
+    fi
+elif [ $1 == renew ]; then
+    echo Renewing existing certificate $2
+
+    if [ ! -f /etc/letsencrypt/renewal/$2.conf ]; then
+        echo Certificate files for $2 do not exist. Try requesting a new certificate.
+        exit 1
+    fi
+
+    # No need to call the hook. Certbot saves the deploy hook in /etc/certbot/renewal
+    certbot renew --force-renewal --tls-sni-01-port=$CERTBOTPORT --cert-name=$2
+elif [ $1 == cron ]; then
+    echo Renewing all
+
+    certbot renew
+
+    for i in $(echo $RENEWED_DOMAINS | sed "s/ / /g")
+    do
+        echo Renewing $i
+
+        echo Merging $i
+
+        /usr/local/sbin/lemgr merge "$i"
+
+        if [ $? -eq 0 ]; then
+            echo Successfully renewed $i
+            exit 0
+        else
+            echo SOS: Error while trying to renew $i
+            exit 2
+        fi
+    done
+fi
+
+exit 0
