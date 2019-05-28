@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Tab completion for lemgr script
+#COMPLETE="create renew cron"
+#complete -W "create renew cron" lemgr
+complete -F _command lemgr
+
+_command() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    if [[ "$COMP_CWORD" == 1 ]]; then
+	    COMPREPLY=( $(compgen -W "create renew cron" -- $cur) )
+    fi
+}
