@@ -1,6 +1,8 @@
 # Makefile for lemgr project
 
+# Defaults
 PREFIX=/usr/local/sbin
+SHELL := /bin/bash
 
 install:
 	# Install binary
@@ -13,7 +15,7 @@ install:
 	$(CURDIR)/etc/bash_completion.d/lemgr-prompt \
 	/etc/bash_completion.d/
 	
-	# Activate completion	
+	# Activate completion (doesn't work, find workaround)
 	source /etc/bash_completion.d/lemgr-prompt
 
 clean:
