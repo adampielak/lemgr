@@ -20,7 +20,7 @@ func_stdout_err()
     exit 128
 }
 
-for i in bash certbot haproxy haproxyctl
+for i in bash certbot haproxy
 do
     if [ "$(which $i)" = "" ] ;then
         echo "This script requires $i"
@@ -47,7 +47,7 @@ function merge {
     if [ $? -eq 0 ]; then
         echo Reloading HAProxy
 
-        haproxyctl reload
+        systemctl restart haproxy
 
 # TODO: Fix this if. For some reason we always get rc 2
 #        if [ $? -eq 0 ]; then
