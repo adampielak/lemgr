@@ -1,8 +1,10 @@
 # Makefile for lemgr project
 
+PREFIX=/usr/local/sbin
+
 install:
 	rsync -a \
-	$(CURDIR)/usr/bin/lemgr \
+	$(CURDIR)/$(PREFIX)/lemgr \
 	/usr/bin/
 	
 	rsync -a \
@@ -11,5 +13,5 @@ install:
 
 clean:
 	rm -f \
-	/usr/bin/lemgr \
+	$(PREFIX)/lemgr \
 	/etc/bash_completion.d/lemgr-prompt
