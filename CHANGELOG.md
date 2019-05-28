@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Bash completion script
+- Makefile for installation
 
 ## [1.0.0] - 2019-04-27
 ### Added
