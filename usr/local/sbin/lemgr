@@ -2,11 +2,11 @@
 #title           :lemgr
 #description     :Request Let's Encrypt certificates on a HAProxy box
 #author          :William Edwards <wedwards@cyberfusion.nl>
-#date            :20190427
-#version         :1.0
+#date            :20190610
+#version         :1.1
 #=====================================================================================================
 
-EMAIL=noise@localhost
+EMAIL=nms@cybernoc.nl
 HAPROXYCONFIG=/etc/haproxy/haproxy.cfg
 CERTDIR=/etc/haproxy/http-certs
 CERTBOTPORT=8888
@@ -45,19 +45,22 @@ function merge {
     haproxy -c -V -f $HAPROXYCONFIG
 
     if [ $? -eq 0 ]; then
-        echo Reloading HAProxy
+        echo Restarting HAProxy
 
         systemctl restart haproxy
 
-# TODO: Fix this if. For some reason we always get rc 2
-#        if [ $? -eq 0 ]; then
-#            echo SOS: Something went wrong while reloading HAProxy
-#            exit 2
-#        fi
+
+        if [ $? -eq 0 ]; then
+            echo Restarted HAProxy
+            exit 0
+        else
+            echo SOS: Something went wrong while reloading HAProxy
+            exit 2
+        fi
 
         exit 0
     else
-        echo SOS: Could not reload HAProxy due to config error
+        echo SOS: Did not reload HAProxy due to config error
         exit 2
     fi
 }
