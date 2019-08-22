@@ -17,9 +17,6 @@ install:
 	@cp \
 	$(CURDIR)/etc/bash_completion.d/lemgr-prompt \
 	/etc/bash_completion.d/
-	
-	# Activate completion (doesn't work, find workaround)
-	@source /etc/bash_completion.d/lemgr-prompt
 
 clean:
 	rm -f \
