@@ -5,9 +5,26 @@
 #complete -W "create renew cron" lemgr
 complete -F _command lemgr
 
+CLUSTERSMAP="/etc/haproxy/clusters.map"
+
+_getBackends() {
+    IFS=''
+    for domain in $(cat $CLUSTERSMAP)
+    do
+        echo $domain | awk '{print $1}'
+    done
+}
+
 _command() {
     local cur=${COMP_WORDS[COMP_CWORD]}
     if [[ "$COMP_CWORD" == 1 ]]; then
-	    COMPREPLY=( $(compgen -W "create renew cron" -- $cur) )
+	COMPREPLY=( $(compgen -W "create renew cron" -- $cur) )
+    fi
+
+    if [[ "$COMP_CWORD" == 2 ]]; then
+        if [[ -e $CLUSTERSMAP ]]; then
+            backends=$(_getBackends | tr '\n' ' ')
+            COMPREPLY=( $(compgen  -W "$backends" -- $cur) )
+        fi
     fi
 }
