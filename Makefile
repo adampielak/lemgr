@@ -6,12 +6,12 @@ SHELL := /bin/bash
 
 install:
 	# Install binary
-	rsync -a \
+	cp \
 	$(CURDIR)/$(PREFIX)/lemgr \
 	$(PREFIX)/
 	
 	# Install completion script
-	rsync -a \
+	cp \
 	$(CURDIR)/etc/bash_completion.d/lemgr-prompt \
 	/etc/bash_completion.d/
 	
