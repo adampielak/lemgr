@@ -6,17 +6,20 @@ SHELL := /bin/bash
 
 install:
 	# Install binary
-	cp \
+	@cp \
 	$(CURDIR)/$(PREFIX)/lemgr \
 	$(PREFIX)/
 	
+	@# Make executable	
+	@chmod +x $(PREFIX)/lemgr
+	
 	# Install completion script
-	cp \
+	@cp \
 	$(CURDIR)/etc/bash_completion.d/lemgr-prompt \
 	/etc/bash_completion.d/
 	
 	# Activate completion (doesn't work, find workaround)
-	source /etc/bash_completion.d/lemgr-prompt
+	@source /etc/bash_completion.d/lemgr-prompt
 
 clean:
 	rm -f \
