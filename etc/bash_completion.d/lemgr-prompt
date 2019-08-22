@@ -22,7 +22,7 @@ _command() {
     fi
 
     if [[ "$COMP_CWORD" == 2 ]]; then
-        if [[ -e $CLUSTERSMAP ]]; then
+        if [ -e $CLUSTERSMAP ] && [ "$3" != "cron" ]; then
             backends=$(_getBackends | tr '\n' ' ')
             COMPREPLY=( $(compgen  -W "$backends" -- $cur) )
         fi
