@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.1] - 2019-08-22
+### Added
+- Bash completion with domains (specific to clusters.map file)
+
+### Removed
+- Non functional activation script
+
 ## [1.1.0] - 2019-05-28
 ### Added
 - Bash completion script
